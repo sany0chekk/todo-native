@@ -1,26 +1,36 @@
-import {Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import React, {useState} from 'react';
 import styles from '../styles.ts';
 import {HidePassIcon, ViewPassIcon} from '../../../assets/icons';
 import AuthLayout from '../components/AuthLayout';
 import AuthHeader from '../components/AuthHeader';
 import {Formik, FormikValues} from 'formik';
-import {LoginSchema} from '../utils/validation.ts';
+import {RegistrationSchema} from '../utils/validation.ts';
 
-export default function LoginPage() {
+export default function RegistrationPage() {
   const [touched, setTouched] = useState({
     email: false,
     password: false,
+    confirmPassword: false,
   });
-  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(true);
 
   return (
     <AuthLayout>
-      <AuthHeader activeTab={'login'} />
+      <AuthHeader activeTab={'registration'} />
       <Formik
-        initialValues={{email: '', password: ''}}
-        validationSchema={LoginSchema}
-        onSubmit={value => console.log('value', value)}>
+        initialValues={{email: '', password: '', confirmPassword: ''}}
+        validationSchema={RegistrationSchema}
+        onSubmit={values => console.log('values', values)}>
         {({
           values,
           setFieldValue,
@@ -38,9 +48,7 @@ export default function LoginPage() {
                 style={styles.input}
                 placeholderTextColor={'#838383'}
                 value={values.email}
-                onChangeText={value => {
-                  setFieldValue('email', value);
-                }}
+                onChangeText={value => setFieldValue('email', value)}
               />
             </View>
             {touched.email && errors.email && (
@@ -73,10 +81,44 @@ export default function LoginPage() {
             {touched.password && errors.password && (
               <Text style={styles.errorMessage}>{errors.password}</Text>
             )}
+            <View style={styles.inputContainer}>
+              <TextInput
+                onFocus={() =>
+                  setTouched(prevState => ({
+                    ...prevState,
+                    confirmPassword: true,
+                  }))
+                }
+                placeholder={'Repeat password'}
+                style={styles.input}
+                placeholderTextColor={'#838383'}
+                value={values.confirmPassword}
+                onChangeText={value => setFieldValue('confirmPassword', value)}
+                secureTextEntry={isPasswordVisible}
+              />
+              <TouchableOpacity
+                style={{width: 20, height: 20}}
+                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                hitSlop={{
+                  top: 15,
+                  bottom: 15,
+                  left: 15,
+                  right: 15,
+                }}>
+                {isPasswordVisible ? <ViewPassIcon /> : <HidePassIcon />}
+              </TouchableOpacity>
+            </View>
+            {touched.confirmPassword && errors.confirmPassword && (
+              <Text style={styles.errorMessage}>{errors.confirmPassword}</Text>
+            )}
             <TouchableOpacity
               style={styles.bottomBtnContainer}
-              disabled={!isValid || !values.email || !values.password}
-              onPress={handleSubmit}>
+              disabled={
+                !isValid ||
+                !values.email ||
+                !values.password ||
+                !values.confirmPassword
+              }>
               <Text style={styles.bottomBtn}>Login</Text>
             </TouchableOpacity>
           </>

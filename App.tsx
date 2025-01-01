@@ -1,11 +1,13 @@
+import 'react-native-gesture-handler';
+
 import React from 'react';
-import {SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
-import LoginPage from './src/screen/Auth/Login';
+import RootNavigation from './src/navigation';
+import {SafeAreaView} from 'react-native';
 
 function App(): React.JSX.Element {
   return (
-    <SafeAreaView>
-      <LoginPage />
+    <SafeAreaView style={{flex: 1}}>
+      <RootNavigation />
     </SafeAreaView>
   );
 }
